@@ -190,9 +190,21 @@ if not info:
     print("false")
 else:
     print("true")
+    output_formula = []
+    output_rule = []
+    len_max = 0
     for line in info:
         line = line.strip('\r\n')
         line_ele = line.split(' ')
-        print(fol_to_normal(line_ele[0]))
+        r = fol_to_normal(line_ele[0])
+        if len(r) > len_max:
+            len_max = len(r)
+        output_formula.append(r)
+        output_rule.append(line_ele[1])
+    for i in range(len(output_formula)):
+        print(output_formula[i], end="")
+        print(" "*(len_max - len(output_formula[i]) + 4), end="")
+        print(output_rule[i])
+
 
 
