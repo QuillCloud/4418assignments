@@ -203,7 +203,8 @@ else:
         output_formula.append(fm_part)
         output_rule.append(line_ele[1])
     for index in range(len(output_formula)):
-        print("{}. {}".format(index + 1,output_formula[index]), end="")
-        print(" "*(len_max - len(output_formula[index]) + 4), end="")
-        print(output_rule[index].rjust(5))
+        output_f = str(index) + "." + output_formula[index]
+        print(output_f, end="")
+        print(" "*(len_max - len(output_f) + 4), end="")
+        print(output_rule[index])
     print("QED.")
