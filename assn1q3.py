@@ -62,7 +62,7 @@ def prefix_to_fol(string):
                 connective = "or("
             elif s == ">":
                 connective = "imp("
-            elif s == ">":
+            elif s == "<":
                 connective = "iff("
             stack.append(connective + e1 + ", " + e2 + ")")
     return stack.pop()
@@ -195,7 +195,7 @@ else:
     len_max = 0
     for line in info:
         line = line.strip('\r\n')
-        line_ele = line.split(' ')
+        line_ele = re.split('\s+', line)
         r = fol_to_normal(line_ele[0])
         if len(r) > len_max:
             len_max = len(r)
@@ -205,6 +205,5 @@ else:
         print(output_formula[i], end="")
         print(" "*(len_max - len(output_formula[i]) + 4), end="")
         print(output_rule[i])
-
-
+    print("QED.")
 
