@@ -202,6 +202,7 @@ else:
             len_max = len(fm_part)
         output_formula.append(fm_part)
         output_rule.append(line_ele[1])
+    len_max += len(str(len(output_formula)))
     for index in range(len(output_formula)):
         output_f = str(index) + "." + output_formula[index]
         print(output_f, end="")
