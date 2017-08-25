@@ -195,7 +195,7 @@ else:
     output_rule = []
     len_max = 0
     for line in info:
-        line = line.strip(b'\r\n')
+        line = line.strip('\r\n')
         line_ele = re.split('\s+', line)
         fm_part = fol_to_normal(line_ele[0])
         if len(fm_part) > len_max:
