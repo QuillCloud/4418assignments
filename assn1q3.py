@@ -2,7 +2,12 @@ import sys
 import os
 import re
 
+# version python3
+# please use command "python3 assn1q3.py 'Sequent'"
+# this program will use the prolog file named "assn1q3_prolog.pl"
 
+
+# function for check operation(Connectives) order
 def operator_ord(o1, o2):
     order = {'!': 3, '&': 2, '|': 2, '>': 1, '<': 1}
     if o1 == '(' or o2 == '(':
@@ -16,6 +21,9 @@ def operator_ord(o1, o2):
             return True
 
 
+# transfer the Sequent into first order logic format
+# First translate Sequent from infix to prefix
+# then call 'prefix_to_fol' transfer to first order logic format
 def to_fol_form(string):
     if string == "":
         return ""
@@ -45,6 +53,7 @@ def to_fol_form(string):
     return prefix_to_fol(prefix_s)
 
 
+# transfer the prefix Sequent into first order logic format
 def prefix_to_fol(string):
     stack = []
     for s in string[::-1]:
@@ -69,6 +78,7 @@ def prefix_to_fol(string):
     return stack.pop()
 
 
+# transfer from first order logic format to original Sequent format
 def fol_to_normal(string):
     string = string.replace("neg", "!")
     string = string.replace("and", "&")
@@ -89,23 +99,13 @@ def fol_to_normal(string):
     return result
 
 
-def get_sub(string):
-    count = 0
-    for i in range(len(string)):
-        if i == ')' and count == 0:
-            return string[i+1:]
-        elif i == '(':
-            count += 1
-        elif i == ')':
-            count -= 1
-    return ""
-
-
+# transform a single formulae from fol to original form
+# for example 'iff(p, q)' will become 'p iff q'
 def get_content(string):
     result = ""
     if len(string) == 1:
         return string
-    while string != "":
+    if string != "":
         if string[0] == '&' or string[0] == '|' \
                 or string[0] == '>' or string[0] == '<':
             sub = split_with_comma(string[2:])
@@ -135,10 +135,14 @@ def get_content(string):
                 result += c
             else:
                 result += '(' + c + ')'
-        string = get_sub(string)
     return result
 
 
+# split string with correct content
+# for example string [imp(q, p), and(q, p)]
+# will get array ['imp(q, p)', 'and(q, p)']
+# Another example string 'or(a, b), c)'
+# will get array ['or(a, b)', 'c']
 def split_with_comma(string):
     result = []
     ele = ""
@@ -163,16 +167,27 @@ def split_with_comma(string):
     return result
 
 
+# read the input arguments
 input_f = sys.argv[1]
+
+# transfer the special Connectives to a symbol
+# 'neg' to '!', 'and' to '&', 'or' to '|'
+# 'imp' to '>', 'iff' to '<'
 input_f = input_f.replace("neg", "!")
 input_f = input_f.replace("and", "&")
 input_f = input_f.replace("or", "|")
 input_f = input_f.replace("imp", ">")
 input_f = input_f.replace("iff", "<")
+
+# remove the '[' and ']' and the space
 input_f = input_f.replace("[", "")
 input_f = input_f.replace("]", "")
 input_f = input_f.replace(" ", "")
+
+# split with 'seq' to get right part and left part
 b = input_f.split("seq")
+
+# transfer right part and left part into first order logic format
 formulae_list = []
 for j in b[0].split(","):
     fm = to_fol_form(j)
@@ -183,26 +198,40 @@ for j in b[1].split(","):
     fm = to_fol_form(j)
     formulae_list.append(fm)
 left_part = ", ".join(formulae_list)
+
+# get final query which can used in prolog
 final = "rule_hw(seq([" + right_part + "], [" + left_part + "]))."
+
+# call the prolog file 'assn1q3_prolog.pl' with query to get answer
 command = "swipl -s assn1q3_prolog.pl -g \"" + final + "\" -t halt. --quiet"
 get_result = os.popen(command)
 info = get_result.readlines()
+
+# if the answer is empty, then print false
 if not info:
     print("false")
 else:
+    # else answer will be true
     print("true")
     output_formula = []
     output_rule = []
     len_max = 0
+    # the output's formula is in first order logic format
+    # so need transfer back to original format
     for line in info:
         line = line.strip('\r\n')
+        # the output also contain the rule
+        # split the output, part 1 is step(formula), part 2 is rule
         line_ele = re.split('\s+', line)
+        # use part 1, transfer each step from fol format to original
         fm_part = fol_to_normal(line_ele[0])
         if len(fm_part) > len_max:
             len_max = len(fm_part)
         output_formula.append(fm_part)
         output_rule.append(line_ele[1])
     len_max += len(str(len(output_formula)))
+
+    # output the steps and the rule
     for index in range(len(output_formula)):
         output_f = str(index + 1) + "." + output_formula[index]
         print(output_f, end="")
