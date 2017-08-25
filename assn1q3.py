@@ -204,7 +204,7 @@ else:
         output_rule.append(line_ele[1])
     len_max += len(str(len(output_formula)))
     for index in range(len(output_formula)):
-        output_f = str(index) + "." + output_formula[index]
+        output_f = str(index + 1) + "." + output_formula[index]
         print(output_f, end="")
         print(" "*(len_max - len(output_f) + 4), end="")
         print(output_rule[index])
