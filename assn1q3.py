@@ -4,7 +4,7 @@ import re
 
 
 def operator_ord(o1, o2):
-    order = {'!': 3, '&': 2, '|': 2, '>': 1, '<':1}
+    order = {'!': 3, '&': 2, '|': 2, '>': 1, '<': 1}
     if o1 == '(' or o2 == '(':
         return False
     elif o2 == ')':
@@ -33,7 +33,7 @@ def to_fol_form(string):
         if s.isalpha():
             prefix_s = s + prefix_s
         else:
-            while len(stack1) and operator_ord(stack1[-1],s):
+            while len(stack1) and operator_ord(stack1[-1], s):
                 op = stack1.pop()
                 prefix_s = op + prefix_s
             if len(stack1) == 0 or s != ')':
@@ -56,6 +56,7 @@ def prefix_to_fol(string):
         else:
             e1 = stack.pop()
             e2 = stack.pop()
+            connective = ""
             if s == "&":
                 connective = "and("
             elif s == "|":
@@ -176,16 +177,16 @@ formulae_list = []
 for j in b[0].split(","):
     fm = to_fol_form(j)
     formulae_list.append(fm)
-right = ", ".join(formulae_list)
+right_part = ", ".join(formulae_list)
 formulae_list.clear()
 for j in b[1].split(","):
     fm = to_fol_form(j)
     formulae_list.append(fm)
-left = ", ".join(formulae_list)
-final = "rule_hw(seq([" + right + "], [" + left + "]))."
+left_part = ", ".join(formulae_list)
+final = "rule_hw(seq([" + right_part + "], [" + left_part + "]))."
 command = "swipl -s assn1q3_prolog.pl -g \"" + final + "\" -t halt. --quiet"
-result = os.popen(command)
-info = result.readlines()
+get_result = os.popen(command)
+info = get_result.readlines()
 if not info:
     print("false")
 else:
@@ -194,16 +195,15 @@ else:
     output_rule = []
     len_max = 0
     for line in info:
-        line = line.strip('\r\n')
+        line = line.strip(b'\r\n')
         line_ele = re.split('\s+', line)
-        r = fol_to_normal(line_ele[0])
-        if len(r) > len_max:
-            len_max = len(r)
-        output_formula.append(r)
+        fm_part = fol_to_normal(line_ele[0])
+        if len(fm_part) > len_max:
+            len_max = len(fm_part)
+        output_formula.append(fm_part)
         output_rule.append(line_ele[1])
-    for i in range(len(output_formula)):
-        print(output_formula[i], end="")
-        print(" "*(len_max - len(output_formula[i]) + 4), end="")
-        print(output_rule[i])
+    for index in range(len(output_formula)):
+        print(output_formula[index], end="")
+        print(" "*(len_max - len(output_formula[index]) + 4), end="")
+        print(output_rule[index])
     print("QED.")
-
