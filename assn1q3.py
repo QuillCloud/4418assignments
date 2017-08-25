@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 
 
 def operator_ord(o1, o2):
@@ -41,16 +42,20 @@ def to_fol_form(string):
                 stack1.pop()
     if len(stack1):
         prefix_s = ''.join(stack1) + prefix_s
-    stack2 = []
-    for s in prefix_s[::-1]:
+    return prefix_to_fol(prefix_s)
+
+
+def prefix_to_fol(string):
+    stack = []
+    for s in string[::-1]:
         if s.isalpha():
-            stack2.append(s)
+            stack.append(s)
         elif s == "!":
-            atom = stack2.pop()
-            stack2.append("neg(" + atom + ")")
+            atom = stack.pop()
+            stack.append("neg(" + atom + ")")
         else:
-            e1 = stack2.pop()
-            e2 = stack2.pop()
+            e1 = stack.pop()
+            e2 = stack.pop()
             if s == "&":
                 connective = "and("
             elif s == "|":
@@ -59,8 +64,102 @@ def to_fol_form(string):
                 connective = "imp("
             elif s == ">":
                 connective = "iff("
-            stack2.append(connective + e1 + ", " + e2 + ")")
-    return stack2.pop()
+            stack.append(connective + e1 + ", " + e2 + ")")
+    return stack.pop()
+
+
+def fol_to_normal(string):
+    string = string.replace("neg", "!")
+    string = string.replace("and", "&")
+    string = string.replace("or", "|")
+    string = string.replace("imp", ">")
+    string = string.replace("iff", "<")
+    get_seq = re.findall(r'\[[^\[]*\]', string)
+    left = split_with_comma(get_seq[0])
+    right = split_with_comma(get_seq[1])
+    right_s = []
+    for i in right:
+        right_s.append(get_content(i))
+    left_s = []
+    for i in left:
+        left_s.append(get_content(i))
+    result = "[" + ",".join(left_s) + "]" + " seq " + \
+             "[" + ",".join(right_s) + "]"
+    return result
+
+
+def get_sub(string):
+    count = 0
+    for i in range(len(string)):
+        if i == ')' and count == 0:
+            return string[i+1:]
+        elif i == '(':
+            count += 1
+        elif i == ')':
+            count -= 1
+    return ""
+
+
+def get_content(string):
+    result = ""
+    if len(string) == 1:
+        return string
+    while string != "":
+        if string[0] == '&' or string[0] == '|' \
+                or string[0] == '>' or string[0] == '<':
+            sub = split_with_comma(string[2:])
+            l = get_content(sub[0])
+            r = get_content(sub[1])
+            if len(l) == 1:
+                result += l
+            else:
+                result += '(' + l + ')'
+            if string[0] == '&':
+                result += " and "
+            elif string[0] == '|':
+                result += " or "
+            elif string[0] == '>':
+                result += " imp "
+            else:
+                result += " iff "
+            if len(r) == 1:
+                result += r
+            else:
+                result += '(' + r + ')'
+        elif string[0] == '!':
+            sub = split_with_comma(string[2:])
+            c = get_content(sub[0])
+            result += "neg "
+            if len(c) == 1:
+                result += c
+            else:
+                result += '(' + c + ')'
+        string = get_sub(string)
+    return result
+
+
+def split_with_comma(string):
+    result = []
+    ele = ""
+    count = 0
+    for i in string:
+        if i == ',' and count == 0:
+            result.append(ele)
+            ele = ""
+        elif i == '(':
+            count += 1
+            ele += i
+        elif i == ')':
+            if count > 0:
+                count -= 1
+                ele += i
+            else:
+                result.append(ele)
+                return result
+        elif i != '[' and i != ']':
+            ele += i
+    result.append(ele)
+    return result
 
 
 input_f = sys.argv[1]
@@ -87,11 +186,13 @@ final = "rule_hw(seq([" + right + "], [" + left + "]))."
 command = "swipl -s assn1q3_prolog.pl -g \"" + final + "\" -t halt. --quiet"
 result = os.popen(command)
 info = result.readlines()
-if info == []:
+if not info:
     print("false")
 else:
     print("true")
     for line in info:
         line = line.strip('\r\n')
-        print(line)
+        line_ele = line.split(' ')
+        print(fol_to_normal(line_ele[0]))
+
 
