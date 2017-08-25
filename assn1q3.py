@@ -84,7 +84,7 @@ def fol_to_normal(string):
     left_s = []
     for i in left:
         left_s.append(get_content(i))
-    result = "[" + ",".join(left_s) + "]" + " seq " + \
+    result = "[" + ",".join(left_s) + "]" + " ⊢ " + \
              "[" + ",".join(right_s) + "]"
     return result
 
@@ -111,27 +111,27 @@ def get_content(string):
             sub = split_with_comma(string[2:])
             l = get_content(sub[0])
             r = get_content(sub[1])
-            if len(l) == 1:
+            if len(l) <= 2:
                 result += l
             else:
                 result += '(' + l + ')'
             if string[0] == '&':
-                result += " and "
+                result += " ∧ "
             elif string[0] == '|':
-                result += " or "
+                result += " ∨ "
             elif string[0] == '>':
-                result += " imp "
+                result += " → "
             else:
-                result += " iff "
-            if len(r) == 1:
+                result += " ↔ "
+            if len(r) <= 2:
                 result += r
             else:
                 result += '(' + r + ')'
         elif string[0] == '!':
             sub = split_with_comma(string[2:])
             c = get_content(sub[0])
-            result += "neg "
-            if len(c) == 1:
+            result += "¬ "
+            if len(c) <= 2:
                 result += c
             else:
                 result += '(' + c + ')'
