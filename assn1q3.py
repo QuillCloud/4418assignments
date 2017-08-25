@@ -84,8 +84,8 @@ def fol_to_normal(string):
     left_s = []
     for i in left:
         left_s.append(get_content(i))
-    result = "[" + ",".join(left_s) + "]" + " seq " + \
-             "[" + ",".join(right_s) + "]"
+    result = "[" + ", ".join(left_s) + "]" + " seq " + \
+             "[" + ", ".join(right_s) + "]"
     return result
 
 
@@ -203,7 +203,7 @@ else:
         output_formula.append(fm_part)
         output_rule.append(line_ele[1])
     for index in range(len(output_formula)):
-        print(output_formula[index], end="")
+        print("{}. {}".format(index + 1,output_formula[index]), end="")
         print(" "*(len_max - len(output_formula[index]) + 4), end="")
         print(output_rule[index])
     print("QED.")
