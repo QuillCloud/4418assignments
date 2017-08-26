@@ -23,7 +23,7 @@ def operator_ord(o1, o2):
 
 # transfer the Sequent into first order logic format
 # First translate Sequent from infix to prefix
-# then call 'prefix_to_fol' transfer to first order logic format
+# then call 'prefix_to_fol' to transfer to first order logic format
 def to_fol_form(string):
     if string == "":
         return ""
