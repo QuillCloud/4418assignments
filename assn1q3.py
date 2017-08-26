@@ -1,11 +1,9 @@
+#!/usr/bin/python3
 import sys
 import os
 import re
 
-# version python3
-# please use command "python3 assn1q3.py 'Sequent'"
-# this program will use the prolog file named "assn1q3_prolog.pl"
-
+# Python version python3
 
 # function for check operation(Connectives) order
 def operator_ord(o1, o2):
