@@ -25,7 +25,6 @@ def operator_ord(o1, o2):
 def to_fol_form(string):
     if string == "":
         return ""
-    prefix_s = ""
     stack1 = []
     tem_s = ""
     word_tff = ""
@@ -60,7 +59,7 @@ def to_fol_form(string):
                     word_tff = ""
                 while len(stack1) and operator_ord(stack1[-1], s):
                     op = stack1.pop()
-                    prefix_array.append(op)
+                    prefix_array = [op] + prefix_array
                 if len(stack1) == 0 or s != ')':
                     stack1.append(s)
                 else:
@@ -204,7 +203,6 @@ input_f = input_f.replace("iff", "<")
 # remove the '[' and ']' and the space
 input_f = input_f.replace("[", "")
 input_f = input_f.replace("]", "")
-
 # split with 'seq' to get right part and left part
 b = input_f.split("seq")
 
