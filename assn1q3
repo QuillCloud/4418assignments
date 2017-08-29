@@ -81,7 +81,7 @@ def prefix_to_fol(prefix_array):
         elif s == "!":
             atom = stack.pop()
             stack.append("neg(" + atom + ")")
-        else:
+        elif s != " ":
             e1 = stack.pop()
             e2 = stack.pop()
             connective = ""
@@ -222,7 +222,8 @@ left_part = ", ".join(formulae_list)
 
 # get final query which can used in prolog
 final = "rule_hw(seq([" + right_part + "], [" + left_part + "]))."
-
+print(final)
+'''
 # call the prolog file 'assn1q3_prolog.pl' with query to get answer
 command = "swipl -s assn1q3_prolog.pl -g \"" + final + "\" -t halt. --quiet"
 get_result = os.popen(command)
@@ -258,3 +259,4 @@ else:
         print(" "*(len_max - len(output_f) + 4), end="")
         print(output_rule[index])
     print("QED.")
+'''
