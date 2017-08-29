@@ -95,7 +95,9 @@ def prefix_to_fol(prefix_array):
             elif s == "<":
                 connective = "iff("
             stack.append(connective + e1 + ", " + e2 + ")")
-    return stack.pop()
+    if len(stack):
+        return stack.pop()
+    return ""
 
 
 # transfer from first order logic format to original Sequent format
@@ -209,11 +211,13 @@ b = input_f.split("seq")
 # transfer right part and left part into first order logic format
 formulae_list = []
 for j in b[0].split(","):
+    j = j.strip()
     fm = to_fol_form(j)
     formulae_list.append(fm)
 right_part = ", ".join(formulae_list)
 formulae_list.clear()
 for j in b[1].split(","):
+    j = j.strip()
     fm = to_fol_form(j)
     formulae_list.append(fm)
 left_part = ", ".join(formulae_list)
@@ -225,7 +229,6 @@ final = "rule_hw(seq([" + right_part + "], [" + left_part + "]))."
 command = "swipl -s assn1q3_prolog.pl -g \"" + final + "\" -t halt. --quiet"
 get_result = os.popen(command)
 info = get_result.readlines()
-info = ['seq([animal,p],[animal,r]) P1']
 # if the answer is empty, then print false
 if not info:
     print("false")
